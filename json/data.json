@@ -1,0 +1,28 @@
+{
+  "timestamp": "",
+  "radius_miles": 0,
+  "area_square_miles": 0,
+  "rectangle_area_square_miles": 0,
+  "center": {
+    "lat": 0,
+    "lng": 0
+  },
+  "rectangle_bounds": {
+    "topLeft": {
+      "lat": 0,
+      "lng": 0
+    },
+    "topRight": {
+      "lat": 0,
+      "lng": 0
+    },
+    "bottomLeft": {
+      "lat": 0,
+      "lng": 0
+    },
+    "bottomRight": {
+      "lat": 0,
+      "lng": 0
+    }
+  }
+}
