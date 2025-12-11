@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Analysis - SSN AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles/user-analysis.css">
+    <!-- Add this CSS for the PDF logo -->
+    <style>
+        #pdfLogo {
+            display: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- ADD THIS SCRIPT BLOCK -->
+    <script>
+        function checkUserAccess() {
+            const user = sessionStorage.getItem('ssnai_user') || localStorage.getItem('ssnai_user');
+            const isAdmin = sessionStorage.getItem('ssnai_admin') ||
+                localStorage.getItem('ssnai_admin') ||
+                localStorage.getItem('ssnai_admin_exists');
+
+            if (!user && !isAdmin) {
+                console.warn("Unauthorized access attempt to user analysis");
+                alert("User login required. Redirecting to login.");
+                window.location.href = 'signup.html';
+                return false;
+            }
+
+            // If it's an admin but they reached the user page, redirect to admin map
+            if (isAdmin && !user) {
+                console.warn("Admin accessed user analysis page - redirecting to admin map");
+                window.location.href = 'map-analysis.html';
+                return false;
+            }
+
+            return true;
+        }
+        // Run check immediately when page loads
+        document.addEventListener('DOMContentLoaded', checkUserAccess);
+    </script>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="dashboard.html" class="nav-logo">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>SSN AI</span>
+            </a>
+            <div class="nav-actions">
+                <button class="btn-back" onclick="window.location.href='dashboard.html'">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </button>
+                <button class="btn-export" id="exportBtn" onclick="exportPDF()">
+                    <i class="fas fa-file-pdf"></i> Export PDF
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <img src="/Images/Real+Estate.gif" alt="Analyzing" class="loading-gif">
+            <h2>Analyzing Your Location...</h2>
+            <p>Please wait while we process your site analysis</p>
+        </div>
+    </div>
+
+    <!-- Main Content (FULL SCREEN LAYOUT) -->
+    <div id="mainContent" class="main-content" style="display: none;">
+
+        <!-- Map Container (FULL WIDTH - NO LEFT PANEL) -->
+        <div class="map-container" id="mapContainer">
+            <canvas id="mapCanvas"></canvas>
+        </div>
+
+        <!-- Right Panel: Details (NO CLOSE BUTTON) -->
+        <div id="rightPanel" class="right-panel">
+            <div class="panel-header">
+                <h3><i class="fas fa-info-circle"></i> Analysis Details</h3>
+            </div>
+            <div class="panel-content" id="rightPanelContent">
+                <!-- ========== ADD DRAG BUTTON HERE ========== -->
+                <div class="drag-control-section">
+                    <h4><i class="fas fa-hand-rock"></i> Drag Mode</h4>
+                    <button id="dragModeBtn" class="btn-drag-toggle" onclick="toggleDragMode()">
+                        <i class="fas fa-arrows-alt"></i>
+                        <span id="dragBtnText">Enable Drag Mode</span>
+                    </button>
+                    <div id="dragInstructions" class="drag-instructions">
+                        <i class="fas fa-check-circle"></i> Drag mode enabled! Click and drag any item (logos, clusters,
+                        highways, site marker) to reposition them.
+                    </div>
+                </div>
+                <!-- ========== END DRAG BUTTON ========== -->
+
+                <!-- ========== ADD RESIZE BUTTON HERE ========== -->
+                <div class="resize-control-section">
+                    <h4><i class="fas fa-expand-arrows-alt"></i> Resize Mode</h4>
+                    <button id="resizeModeBtn" class="btn-resize-toggle" onclick="toggleResizeMode()">
+                        <i class="fas fa-expand-alt"></i>
+                        <span id="resizeBtnText">Enable Resize Mode</span>
+                    </button>
+                    <div id="resizeInstructions" class="resize-instructions">
+                        <i class="fas fa-check-circle"></i> Resize mode enabled! Click on any item to adjust its size.
+                    </div>
+                </div>
+                <!-- ========== END RESIZE BUTTON ========== -->
+
+                <!-- ========== CLUSTER CONTROLS SECTION ========== -->
+                <div class="cluster-controls-section">
+                    <h4><i class="fas fa-shapes"></i> Size and Shape Controls</h4>
+                    <div class="button-row">
+                        <button id="reshapeBtn" class="btn-cluster-control btn-reshape">
+                            <i class="fas fa-vector-square"></i>
+                            <span>Reshape Clusters</span>
+                        </button>
+                        <button id="rotateBtn" class="btn-cluster-control btn-rotate">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Rotate Highways</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- ========== END CLUSTER CONTROLS ========== -->
+
+            </div>
+
+            <div class="info-section">
+                <h4><i class="fas fa-map-marker-alt"></i> Location</h4>
+                <p id="locationInfo">Loading...</p>
+            </div>
+            <div class="info-section">
+                <h4><i class="fas fa-circle"></i> Search Area</h4>
+                <p id="searchArea">Loading...</p>
+            </div>
+
+            <!-- POI Sections -->
+            <div id="poiSections"></div>
+
+            <!-- Highway Section -->
+            <div id="highwaySection"></div>
+        </div>
+    </div>
+
+    <script type="module" src="/js/user-analysis.js"></script>
+    <!-- Hidden logo for PDF reports -->
+    <img id="pdfLogo" src="/Images/image.png" alt="Company Logo" style="display:none;">
+</body>
+
+</html>
